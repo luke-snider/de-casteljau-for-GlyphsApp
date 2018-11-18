@@ -160,18 +160,6 @@ class DeCasteljau:
 			
 			self.interpolatedPoints = interpolatedPoints
 
-
-	def getScale( self ):
-		"""
-		Returns the current scale factor of the Edit View UI.
-		Divide any scalable size by this value in order to keep the same pixel size.
-		"""
-		try:
-			return self.controller.graphicView().scale()
-		except:
-			self.logToConsole( "getScale error: Scale defaulting to 1.0. %s" % str(e) )
-			return 1.0
-
 	def drawTangents(self, glyph):
 		if self.w.off.get() != 1:
 			try:
