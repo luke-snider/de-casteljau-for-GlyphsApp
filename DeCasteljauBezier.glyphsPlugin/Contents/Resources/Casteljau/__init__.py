@@ -45,7 +45,9 @@ class DeCasteljau:
 		
 		
 		self.interpolatedPoints = []
-		
+
+	def updateView(self):
+		Glyphs.redraw()
 
 	def checkbox5Callback(self, sender):
 		if sender.get() == 1:
@@ -54,7 +56,7 @@ class DeCasteljau:
 		if sender.get() == 0:
 			if self.w.ten.get() == 0:
 				self.w.sliderInterpol.enable(True)
-		Glyphs.redraw()
+		self.updateView()
 
 	def checkbox10Callback(self, sender):
 		if sender.get() == 1:
@@ -63,31 +65,27 @@ class DeCasteljau:
 		if sender.get() == 0:
 			if self.w.five.get() == 0:
 				self.w.sliderInterpol.enable(True)
-		Glyphs.redraw()
+		self.updateView()
 
 	def sliderCallback(self, sender):
-		Glyphs.redraw()
+		self.updateView()
 
 	def updateFromUI(self, sender):
-		Glyphs.redraw()
+		self.updateView()
 
 	def settingPtThicknessFromUI(self, sender):
 		try:
-			ptThickness = int(sender.get())
+			int(str(self.w.ptThickness.get()))
 		except ValueError:
 			self.w.ptThickness.set(str(2))
-			
-		Glyphs.redraw()
+		self.updateView()
 
 	def settingStrokeThicknessFromUI(self, sender):
 		try:
-			ptThickness = int(sender.get())
+			int(str(self.w.strokeThickness.get()))
 		except ValueError:
 			self.w.strokeThickness.set(str(1))
-			
-		Glyphs.redraw()
-
-
+		self.updateView()
 
 	def interpolatePoint(self, pt1, pt2, interpolFactor):
 		v = interpolFactor
