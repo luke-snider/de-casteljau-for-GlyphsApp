@@ -173,62 +173,57 @@ class DeCasteljau:
 			return 1.0
 
 	def drawTangents(self, glyph):
-		try:
-			# 3 (segmented button) turns off
-			if self.w.off.get() != 1:
-				try:
-					stepsToDraw = []
-					if self.w.five.get() == 1:
-						divisor = 10
-						for interpolFactor in range(0,100,divisor):
-							interpolFactor = interpolFactor * 0.01
-							stepsToDraw.append(interpolFactor)
-					if self.w.ten.get() == 1:
-						divisor = 5
-						for interpolFactor in range(0,100,divisor):
-							interpolFactor = interpolFactor * 0.01
-							stepsToDraw.append(interpolFactor)
-					else:
-						interpolFactor = float("{0:.2f}".format(self.w.sliderInterpol.get()))
+		if self.w.off.get() != 1:
+			try:
+				stepsToDraw = []
+				if self.w.five.get() == 1:
+					divisor = 10
+					for interpolFactor in range(0,100,divisor):
+						interpolFactor = interpolFactor * 0.01
 						stepsToDraw.append(interpolFactor)
+				if self.w.ten.get() == 1:
+					divisor = 5
+					for interpolFactor in range(0,100,divisor):
+						interpolFactor = interpolFactor * 0.01
+						stepsToDraw.append(interpolFactor)
+				else:
+					interpolFactor = float("{0:.2f}".format(self.w.sliderInterpol.get()))
+					stepsToDraw.append(interpolFactor)
 
-					for contour in glyph.contours:
-						for segmentIndex, segment in enumerate(contour.segments):
-							
-							allInterpolatedPoints = []
-							lastInterpolatedPt = []
-							if segment.type == "line":
-								pass
+				for contour in glyph.contours:
+					for segmentIndex, segment in enumerate(contour.segments):
+						
+						allInterpolatedPoints = []
+						lastInterpolatedPt = []
+						if segment.type == "line":
+							pass
+						else:
+							for interpolFactor in stepsToDraw:
+								
+								listOfSelectedPoints = self.getSelectedPoints(segmentIndex, segment, contour)
+								self.drawingCalculation(glyph, listOfSelectedPoints, interpolFactor)
+								
+								
+								if self.w.oneTwoThree.get() != 0:
+									allInterpolatedPoints.extend(self.interpolatedPoints)
+								for a in range(self.w.oneTwoThree.get()):
+									self.drawingCalculation(glyph, self.interpolatedPoints, interpolFactor)
+									allInterpolatedPoints.extend(self.interpolatedPoints)
+									if a == 1:
+										try:
+											lastInterpolatedPt.append((self.interpolatedPoints[-1]))
+										except IndexError:
+											pass
+						
+						
+						for point in allInterpolatedPoints:
+							if point in lastInterpolatedPt:
+								colorDots = self.w.colorfinalPt.get()
+								self.drawDot(point, colorDots)
 							else:
-								for interpolFactor in stepsToDraw:
-									
-									listOfSelectedPoints = self.getSelectedPoints(segmentIndex, segment, contour)
-									self.drawingCalculation(glyph, listOfSelectedPoints, interpolFactor)
-									
-									
-									if self.w.oneTwoThree.get() != 0:
-										allInterpolatedPoints.extend(self.interpolatedPoints)
-									for a in range(self.w.oneTwoThree.get()):
-										self.drawingCalculation(glyph, self.interpolatedPoints, interpolFactor)
-										allInterpolatedPoints.extend(self.interpolatedPoints)
-										if a == 1:
-											try:
-												lastInterpolatedPt.append((self.interpolatedPoints[-1]))
-											except IndexError:
-												pass
-							
-							
-							for point in allInterpolatedPoints:
-								if point in lastInterpolatedPt:
-									colorDots = self.w.colorfinalPt.get()
-									self.drawDot(point, colorDots)
-								else:
-									colorDots = self.w.colorPts.get()
-									self.drawDot(point, colorDots)
-				except TypeError:
-					pass
-		except AttributeError:
-			pass
+								colorDots = self.w.colorPts.get()
+								self.drawDot(point, colorDots)
+			except TypeError:
 
 	def drawDot(self, point, colorDots):
 		widthP = int(self.w.ptThickness.get())
