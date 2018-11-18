@@ -26,6 +26,9 @@ class DeCasteljau:
 	def __init__(self):
 		self.heightOfTool = 95
 		self.widthOfTool = 255
+		self.DeCasteljauInit()
+
+	def DeCasteljauInit(self):
 		self.w = FloatingWindow((self.widthOfTool, self.heightOfTool), "De Casteljau / revolvertype.com")
 		self.w.sliderInterpol = Slider((10, 8, -10, 10), sizeStyle="small", minValue=0, maxValue=1, value=0.5, callback=self.sliderCallback)
 		y = 35
