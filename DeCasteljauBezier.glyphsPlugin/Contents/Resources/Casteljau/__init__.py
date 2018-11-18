@@ -42,8 +42,6 @@ class DeCasteljau:
 		self.w.strokeThickness = EditText((-60,y,25,19), "1", sizeStyle="small", callback=self.settingStrokeThicknessFromUI) 
 		self.w.ptThickness = EditText((-35,y,25,19), "2", sizeStyle="small", callback=self.settingPtThicknessFromUI) 
 
-		
-		
 		self.interpolatedPoints = []
 
 	def updateView(self):
@@ -89,7 +87,7 @@ class DeCasteljau:
 
 	def interpolatePoint(self, pt1, pt2, interpolFactor):
 		v = interpolFactor
-		
+
 		(xa, ya), (xb, yb) = pt1, pt2
 		if not isinstance(v, tuple):
 			xv = v
@@ -102,53 +100,41 @@ class DeCasteljau:
 		pt_y_rounded = float("{0:.1f}".format(calculated[1]))
 		return (pt_x_rounded, pt_y_rounded)
 
-
-	
 	def getSelectedPoints(self, segmentIndex, segment, contour):
 		collectionOfSelectedPoints = []
 		tempList = []
 		if segment.type == "curve":
-			
-			
-			for pts2 in contour.segments[segmentIndex-1]:
-				 tempList.append(pts2)
-				 
-				 
-				 
-			collectionOfSelectedPoints.append((tempList[-1].x, tempList[-1].y, tempList[-1].type))
-			
-			
-			for pts in segment.points:
-				## print(pts.x, pts.y, pts.type)
-				collectionOfSelectedPoints.append((pts.x, pts.y, pts.type))
-			
-		return collectionOfSelectedPoints
 
+			for pts2 in contour.segments[segmentIndex-1]:
+				tempList.append(pts2)
+
+			collectionOfSelectedPoints.append((tempList[-1].x, tempList[-1].y, tempList[-1].type))
+
+			for pts in segment.points:
+				collectionOfSelectedPoints.append((pts.x, pts.y, pts.type))
+
+		return collectionOfSelectedPoints
 
 	def drawingCalculation(self, glyph, listOfSelectedPoints, interpolFactor):
 
 		color = self.w.colorFill.get()
-		
+
 		if len(listOfSelectedPoints) != 0:
 			path = NSBezierPath.bezierPath()
 			
 			path.setLineWidth_(int(self.w.strokeThickness.get()))
 			
-			for idx, pts in enumerate(listOfSelectedPoints): 
+			for idx, pts in enumerate(listOfSelectedPoints):
 				
 				if idx == 0:
 					(startpoint_x, startpoint_y) = (listOfSelectedPoints[0][0], listOfSelectedPoints[0][1])
 					path.moveToPoint_((startpoint_x, startpoint_y))
 				
-				else:				 
+				else:
 					path.lineToPoint_(((pts[0]),(pts[1])))
 					color.set()
 					path.stroke()
 
-			
-			
-			
-			
 			processedPoints = []
 			interpolatedPoints = []
 			for i, pts in enumerate(listOfSelectedPoints):
@@ -168,8 +154,6 @@ class DeCasteljau:
 					else:
 						pass
 						
-						
-							#self.drawPointCoordinates(glyph, pt = interpolatedPt)
 				except IndexError:
 					pass
 			
@@ -192,8 +176,6 @@ class DeCasteljau:
 			# 3 (segmented button) turns off
 			if self.w.off.get() != 1:
 				try:
-					
-					
 					stepsToDraw = []
 					if self.w.five.get() == 1:
 						divisor = 10
@@ -209,8 +191,6 @@ class DeCasteljau:
 						interpolFactor = float("{0:.2f}".format(self.w.sliderInterpol.get()))
 						stepsToDraw.append(interpolFactor)
 
-					print "stepsToDraw", stepsToDraw
-					
 					for contour in glyph.contours:
 						for segmentIndex, segment in enumerate(contour.segments):
 							
@@ -220,6 +200,7 @@ class DeCasteljau:
 								pass
 							else:
 								for interpolFactor in stepsToDraw:
+									
 									listOfSelectedPoints = self.getSelectedPoints(segmentIndex, segment, contour)
 									self.drawingCalculation(glyph, listOfSelectedPoints, interpolFactor)
 									
@@ -246,10 +227,10 @@ class DeCasteljau:
 				except TypeError:
 					pass
 		except AttributeError:
-			return
+			pass
 
 	def drawDot(self, point, colorDots):
-		widthP = int(self.w.ptThickness.get())	  
+		widthP = int(self.w.ptThickness.get())
 		path = NSBezierPath.bezierPath()
 		path.moveToPoint_((point[0]-widthP, point[1]+0))
 		path.curveToPoint_controlPoint1_controlPoint2_((point[0]+0, point[1]+widthP),(point[0]-widthP, point[1]+widthP), (point[0]+0, point[1]+widthP))
