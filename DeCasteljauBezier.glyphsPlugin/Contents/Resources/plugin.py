@@ -19,6 +19,7 @@ hasAllModules = True
 
 try:
 	from vanilla import *
+	from robofab.world import RGlyph
 except:
 	hasAllModules = False
 	print "Exception in De Casteljau Bezier:"
@@ -26,14 +27,6 @@ except:
 	traceback.print_exc(file=sys.stdout)
 	print '-'*60
 warned = False
-
-try:
-	from objectsGS import RFont, RGlyph
-except:
-	print "Exception in De Casteljau Bezier - ObjectsGS"
-	print '-'*60
-	traceback.print_exc(file=sys.stdout)
-	print '-'*60
 
 class DeCasteljauTool(GeneralPlugin):
 	def settings(self):
@@ -71,7 +64,8 @@ class DeCasteljauTool(GeneralPlugin):
 	def showWindow(self, sender):
 		""" Do something like show a window"""
 		
-		if not hasAllModules:
+		if not hasAllModules and not warned:
+			warned = True
 			ErrorString = "This plugin needs the vanilla, robofab and fontTools module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
 			Message(ErrorString, title="Problem with some modules")
 			return
