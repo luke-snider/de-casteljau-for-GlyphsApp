@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#coding=utf-8
+from __future__ import print_function
 
 '''
 De Casteljau Algorythm Live Visualisation
@@ -13,9 +13,9 @@ import objc
 import sys, os, re, traceback
 
 from GlyphsApp import *
-from GlyphsApp.plugins import *
-from vanilla import *
 from AppKit import NSColor, NSBezierPath
+from vanilla import *
+
 
 class DeCasteljau:
 
@@ -212,6 +212,7 @@ class DeCasteljau:
 								colorDots = self.w.colorPts.get()
 								self.drawDot(point, colorDots)
 			except TypeError:
+				pass
 
 	def drawDot(self, point, colorDots):
 		widthP = int(self.w.ptThickness.get())
