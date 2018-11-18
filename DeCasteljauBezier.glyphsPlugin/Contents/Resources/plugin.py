@@ -38,14 +38,14 @@ except:
 class DeCasteljauTool(GeneralPlugin):
 	def settings(self):
 		self.name = "DeCasteljau"
-	
+
 	def start(self):
 		newMenuItem = NSMenuItem(self.name, self.showWindow)
 		Glyphs.menu[EDIT_MENU].append(newMenuItem)
 		self.DeCasteljau = DeCasteljau()
 		self.isDrawing = False
 		self.DeCasteljau.w.bind("close", self.stopDrawing)
-	
+
 	def startDrawing(self):
 		if not self.isDrawing:
 			self.isDrawing = True
@@ -53,7 +53,6 @@ class DeCasteljauTool(GeneralPlugin):
 		self.DeCasteljau.updateView()
 
 	def stopDrawing(self, sender):
-		print "__stopDrawing", sender
 		if self.isDrawing:
 			self.isDrawing = False
 			GSCallbackHandler.removeCallback_forOperation_(self, DRAWBACKGROUND)
@@ -69,7 +68,6 @@ class DeCasteljauTool(GeneralPlugin):
 		except Exception as e:
 			print traceback.format_exc()
 
-	
 	def showWindow(self, sender):
 		""" Do something like show a window"""
 		
@@ -81,13 +79,10 @@ class DeCasteljauTool(GeneralPlugin):
 			self.DeCasteljau.DeCasteljauInit()
 		self.DeCasteljau.showWindow()
 		self.startDrawing()
-	
+
 	def setController_(self, controller):
-		self.DeCasteljau.controller = controller
-	
+		pass
+
 	def __file__(self):
 		"""Please leave this method unchanged"""
 		return __file__
-
-
-print ""
