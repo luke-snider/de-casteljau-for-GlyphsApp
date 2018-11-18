@@ -23,18 +23,7 @@ class DeCasteljau:
 	defaultColorPts = NSColor.colorWithCalibratedRed_green_blue_alpha_(1,0.3,0.4,1)
 	defaultColorFinalPt = NSColor.colorWithCalibratedRed_green_blue_alpha_(0.1,0.2,0.6,1)
 
-	def __init__( self ):
-		"""
-		Put any initializations you want to make here.
-		"""
-		try:
-			self.DeCasteljau = None
-			self.DeCasteljauInit()
-		except Exception as e:
-			
-			self.logToConsole( "init: %s" % str(e) )
-
-	def DeCasteljauInit(self):
+	def __init__(self):
 		self.heightOfTool = 95
 		self.widthOfTool = 255
 		self.w = FloatingWindow((self.widthOfTool, self.heightOfTool), "De Casteljau / revolvertype.com")
