@@ -50,13 +50,15 @@ class DeCasteljauTool(GeneralPlugin):
 		if not self.isDrawing:
 			self.isDrawing = True
 			GSCallbackHandler.addCallback_forOperation_(self, DRAWBACKGROUND)
-	
+		self.DeCasteljau.updateView()
+
 	def stopDrawing(self, sender):
 		print "__stopDrawing", sender
 		if self.isDrawing:
 			self.isDrawing = False
 			GSCallbackHandler.removeCallback_forOperation_(self, DRAWBACKGROUND)
-	
+		self.DeCasteljau.updateView()
+
 	def drawBackgroundForLayer_options_(self, layer, options):
 		"""
 		Whatever you draw here will be displayed BEHIND the paths.
