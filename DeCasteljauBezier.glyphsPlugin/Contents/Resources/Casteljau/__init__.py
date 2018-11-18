@@ -31,16 +31,17 @@ class DeCasteljau:
 		y = 35
 		self.w.oneTwoThree = SegmentedButton((10, y-5, 125, 20), [dict(title=" 1 "), dict(title=" 2 "), dict(title=" 3 ")], callback=self.updateFromUI)
 		self.w.oneTwoThree.set(2)
-		self.w.five = CheckBox((130, y-2, 40, 16), '5', callback=self.checkbox5Callback, value=False, sizeStyle="small")
-		self.w.ten = CheckBox((160, y-2, 40, 16), '10', callback=self.checkbox10Callback, value=False, sizeStyle="small")
+		self.w.five = CheckBox((140, y-2, 40, 16), '5', callback=self.checkbox5Callback, value=False, sizeStyle="small")
+		self.w.ten = CheckBox((170, y-2, 40, 16), '10', callback=self.checkbox10Callback, value=False, sizeStyle="small")
 		self.w.off = CheckBox((-45, y-2, 40, 16), 'off', callback=self.updateFromUI, value=False, sizeStyle="small")
 		y = 65
 		self.w.colorFill = ColorWell((10, y, 30, 18), color=self.defaultColorFill, callback=self.updateFromUI)
 		self.w.colorPts = ColorWell((42, y, 30, 18), color=self.defaultColorPts, callback=self.updateFromUI)
 		self.w.colorfinalPt = ColorWell((74, y, 30, 18), color=self.defaultColorFinalPt, callback=self.updateFromUI)
-		self.w.Info = TextBox((115,y+3,100,20), text="Stroke / Dots:", sizeStyle="small")
-		self.w.strokeThickness = EditText((-60,y,25,19), "1", sizeStyle="small", callback=self.settingStrokeThicknessFromUI) 
-		self.w.ptThickness = EditText((-35,y,25,19), "2", sizeStyle="small", callback=self.settingPtThicknessFromUI) 
+		self.w.Stroke = TextBox((116, y+3, 39, 20), text="Stroke", sizeStyle="small")
+		self.w.strokeThickness = EditText((158, y, 25, 19), "1", sizeStyle="small", callback=self.settingStrokeThicknessFromUI)
+		self.w.Dots = TextBox((188, y+3, 30, 20), text="Dots", sizeStyle="small")
+		self.w.ptThickness = EditText((219, y, 25, 19), "2", sizeStyle="small", callback=self.settingPtThicknessFromUI)
 
 		self.interpolatedPoints = []
 
