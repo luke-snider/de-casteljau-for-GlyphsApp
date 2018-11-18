@@ -12,42 +12,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 import objc
 import sys, os, re, traceback
 
-hasAllModules = True
-hasCurrentWrapper = False
-
-try:
-	from GlyphsApp import *
-	from GlyphsApp.plugins import *
-	from vanilla import *
-	from AppKit import NSColor, NSBezierPath
-	from robofab.world import CurrentFont, CurrentGlyph
-
-
-except:
-	hasAllModules = False
-	print "Exception in De Casteljau Bezier:"
-	print '-'*60
-	traceback.print_exc(file=sys.stdout)
-	print '-'*60
-warned = False
-
-
-try:
-	from objectsGS import RFont
-	getGlyph_op = getattr(RFont, "getGlyph", None)
-	if callable(getGlyph_op):
-		hasCurrentWrapper = True
-except:
-	print "Exception in De Casteljau Bezier - ObjectsGS"
-	print '-'*60
-	traceback.print_exc(file=sys.stdout)
-	print '-'*60
-
-
-
-
-
-
+from GlyphsApp import *
+from GlyphsApp.plugins import *
+from vanilla import *
+from AppKit import NSColor, NSBezierPath
 
 class DeCasteljau:
 
@@ -408,20 +376,6 @@ class DeCasteljau:
 		NSLog( myLog )
 
 	def showWindow(self):
-		try:
-			if not hasAllModules:
-				ErrorString = "This plugin needs the vanilla, robofab and fontTools module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
-				NSRunAlertPanel("Problem with some modules", ErrorString, "", "", "")
-				return
-			if not hasCurrentWrapper:
-				NSRunAlertPanel("Problem with some RoboFab wrapper", "Please install the latest version of the file \"objectsGS.py\" from https://github.com/schriftgestalt/Glyphs-Scripts", "", "", "")
-				return
-			
-			
-			
-			
-		except Exception as e:
-			self.logToConsole( "showWindow: %s" % str(e) )
 		if not self.w.isVisible():
 			self.w.open()
 			self.w.makeKey()
