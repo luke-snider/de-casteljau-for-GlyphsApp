@@ -8,7 +8,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 '''
 
 
-from Casteljau import DeCasteljau
+from DeCasteljau import DeCasteljau
 
 import objc
 from GlyphsApp import *
