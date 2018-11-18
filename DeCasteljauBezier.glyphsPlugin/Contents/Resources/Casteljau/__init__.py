@@ -200,16 +200,8 @@ class DeCasteljau:
 			self.logToConsole( "getScale error: Scale defaulting to 1.0. %s" % str(e) )
 			return 1.0
 
-
-
-	
-	def drawInGlyphView(self, layer):
-		#print "l.parent.name", layer.parent.name # layer.parent.name
-		#glyph = RFont(layer.parent)
+	def drawTangents(self, glyph):
 		try:
-			glyphsFont = Glyphs.font
-			Font = RFont(glyphsFont)
-			glyph = Font[layer.parent.name]
 			# 3 (segmented button) turns off
 			if self.w.off.get() != 1:
 				try:

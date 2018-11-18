@@ -65,12 +65,13 @@ class DeCasteljauTool(GeneralPlugin):
 			self.isDrawing = False
 			GSCallbackHandler.removeCallback_forOperation_(self, DRAWBACKGROUND)
 	
-	def drawBackgroundForLayer_options_( self, Layer, options):
+	def drawBackgroundForLayer_options_(self, layer, options):
 		"""
 		Whatever you draw here will be displayed BEHIND the paths.
 		"""
 		try:
-			self.DeCasteljau.drawInGlyphView(Layer)
+			glyph = RGlyph(layer=layer)
+			self.DeCasteljau.drawTangents(glyph)
 		except Exception as e:
 			print traceback.format_exc()
 
