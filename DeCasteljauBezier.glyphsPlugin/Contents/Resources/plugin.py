@@ -8,66 +8,75 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 '''
 
 
-from Casteljau import DeCasteljau
+from DeCasteljau import DeCasteljau
 
 import objc
 from GlyphsApp import *
 from GlyphsApp.plugins import *
 import traceback
 
+hasAllModules = True
+
+try:
+	from vanilla import *
+	from robofab.world import RGlyph
+except:
+	hasAllModules = False
+	print "Exception in De Casteljau Bezier:"
+	print '-'*60
+	traceback.print_exc(file=sys.stdout)
+	print '-'*60
+warned = False
+
 class DeCasteljauTool(GeneralPlugin):
 	def settings(self):
 		self.name = "DeCasteljau"
-	
+
 	def start(self):
-		try: 
-			# new API in Glyphs 2.3.1-910
-			newMenuItem = NSMenuItem(self.name, self.showWindow)
-			Glyphs.menu[EDIT_MENU].append(newMenuItem)
-		except:
-			mainMenu = Glyphs.mainMenu()
-			s = objc.selector(self.showWindow,signature='v@:@')
-			newMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(self.name, s, "")
-			newMenuItem.setTarget_(self)
-			mainMenu.itemWithTag_(5).submenu().addItem_(newMenuItem)
+		newMenuItem = NSMenuItem(self.name, self.showWindow)
+		Glyphs.menu[EDIT_MENU].append(newMenuItem)
 		self.DeCasteljau = DeCasteljau()
 		self.isDrawing = False
 		self.DeCasteljau.w.bind("close", self.stopDrawing)
-	
+
 	def startDrawing(self):
 		if not self.isDrawing:
 			self.isDrawing = True
 			GSCallbackHandler.addCallback_forOperation_(self, DRAWBACKGROUND)
-	
+		self.DeCasteljau.updateView()
+
 	def stopDrawing(self, sender):
-		print "__stopDrawing", sender
 		if self.isDrawing:
 			self.isDrawing = False
 			GSCallbackHandler.removeCallback_forOperation_(self, DRAWBACKGROUND)
-	
-	def drawBackgroundForLayer_options_( self, Layer, options):
+		self.DeCasteljau.updateView()
+
+	def drawBackgroundForLayer_options_(self, layer, options):
 		"""
 		Whatever you draw here will be displayed BEHIND the paths.
 		"""
 		try:
-			self.DeCasteljau.drawInGlyphView(Layer)
+			glyph = RGlyph(layer=layer)
+			self.DeCasteljau.drawTangents(glyph)
 		except Exception as e:
 			print traceback.format_exc()
 
-	
 	def showWindow(self, sender):
 		""" Do something like show a window"""
+		
+		if not hasAllModules and not warned:
+			warned = True
+			ErrorString = "This plugin needs the vanilla, robofab and fontTools module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
+			Message(ErrorString, title="Problem with some modules")
+			return
 		if not self.DeCasteljau.w._window: # after closing the window, the NSWindow, might go away. so we need to recreate it. TODO: find a better solution
 			self.DeCasteljau.DeCasteljauInit()
 		self.DeCasteljau.showWindow()
 		self.startDrawing()
-	
+
 	def setController_(self, controller):
-		self.DeCasteljau.controller = controller
-	
+		pass
+
 	def __file__(self):
 		"""Please leave this method unchanged"""
 		return __file__
-
-
-print ""
