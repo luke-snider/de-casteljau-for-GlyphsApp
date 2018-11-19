@@ -194,9 +194,7 @@ class DeCasteljau:
 								listOfSelectedPoints = self.getSelectedPoints(segmentIndex, segment, contour)
 								self.drawingCalculation(glyph, listOfSelectedPoints, interpolFactor)
 								
-								
-								if self.w.oneTwoThree.get() != 0:
-									allInterpolatedPoints.extend(self.interpolatedPoints)
+								allInterpolatedPoints.extend(self.interpolatedPoints)
 								for a in range(self.w.oneTwoThree.get()):
 									self.drawingCalculation(glyph, self.interpolatedPoints, interpolFactor)
 									allInterpolatedPoints.extend(self.interpolatedPoints)
