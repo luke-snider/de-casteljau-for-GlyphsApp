@@ -140,7 +140,6 @@ class DeCasteljau:
 
 	def drawTangents(self, layer):
 		if self.w.off.get() != 1:
-			print("__1")
 			try:
 				stepsToDraw = []
 				if self.w.five.get() == 1:
