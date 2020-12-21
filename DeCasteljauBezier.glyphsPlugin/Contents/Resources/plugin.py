@@ -19,7 +19,6 @@ hasAllModules = True
 
 try:
 	from vanilla import *
-	from robofab.world import RGlyph
 except:
 	hasAllModules = False
 	print("Exception in De Casteljau Bezier:")
@@ -60,8 +59,8 @@ class DeCasteljauTool(GeneralPlugin):
 		Whatever you draw here will be displayed BEHIND the paths.
 		"""
 		try:
-			glyph = RGlyph(layer=layer)
-			self.DeCasteljau.drawTangents(glyph)
+			self.DeCasteljau.scale = options["Scale"]
+			self.DeCasteljau.drawTangents(layer)
 		except Exception as e:
 			print(traceback.format_exc())
 

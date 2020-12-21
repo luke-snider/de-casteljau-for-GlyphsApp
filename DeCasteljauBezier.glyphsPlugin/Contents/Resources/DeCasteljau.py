@@ -13,7 +13,7 @@ import objc
 import sys, os, re, traceback
 
 from GlyphsApp import *
-from AppKit import NSColor, NSBezierPath
+from AppKit import NSColor, NSBezierPath, NSMakeRect
 from vanilla import *
 
 
@@ -45,8 +45,6 @@ class DeCasteljau:
 		self.w.strokeThickness = EditText((158, y, 25, 19), "1", sizeStyle="small", callback=self.settingStrokeThicknessFromUI)
 		self.w.Dots = TextBox((188, y+3, 30, 20), text="Dots", sizeStyle="small")
 		self.w.ptThickness = EditText((219, y, 25, 19), "2", sizeStyle="small", callback=self.settingPtThicknessFromUI)
-
-		self.interpolatedPoints = []
 
 	def updateView(self):
 		Glyphs.redraw()
@@ -104,67 +102,45 @@ class DeCasteljau:
 		pt_y_rounded = float("{0:.1f}".format(calculated[1]))
 		return (pt_x_rounded, pt_y_rounded)
 
-	def getSelectedPoints(self, segmentIndex, segment, contour):
-		collectionOfSelectedPoints = []
-		tempList = []
-		if segment.type == "curve":
-
-			for pts2 in contour.segments[segmentIndex-1]:
-				tempList.append(pts2)
-
-			collectionOfSelectedPoints.append((tempList[-1].x, tempList[-1].y, tempList[-1].type))
-
-			for pts in segment.points:
-				collectionOfSelectedPoints.append((pts.x, pts.y, pts.type))
-
-		return collectionOfSelectedPoints
-
-	def drawingCalculation(self, glyph, listOfSelectedPoints, interpolFactor):
+	def drawingCalculation(self, curvePoints, interpolFactor):
 
 		color = self.w.colorFill.get()
 
-		if len(listOfSelectedPoints) != 0:
+		if len(curvePoints) != 0:
 			path = NSBezierPath.bezierPath()
 			
-			path.setLineWidth_(int(self.w.strokeThickness.get()))
+			path.setLineWidth_(int(self.w.strokeThickness.get()) / self.scale)
 			
-			for idx, pts in enumerate(listOfSelectedPoints):
+			for idx, pts in enumerate(curvePoints):
 				
 				if idx == 0:
-					(startpoint_x, startpoint_y) = (listOfSelectedPoints[0][0], listOfSelectedPoints[0][1])
-					path.moveToPoint_((startpoint_x, startpoint_y))
-				
+					path.moveToPoint_((pts[0],pts[1]))
 				else:
-					path.lineToPoint_(((pts[0]),(pts[1])))
+					path.lineToPoint_((pts[0],pts[1]))
 					color.set()
 					path.stroke()
 
 			processedPoints = []
 			interpolatedPoints = []
-			for i, pts in enumerate(listOfSelectedPoints):
+			for i, pts in enumerate(curvePoints):
 				try:
-					pt1 = (listOfSelectedPoints[i][0],listOfSelectedPoints[i][1])
-					pt2 = (listOfSelectedPoints[i+1][0],listOfSelectedPoints[i+1][1])
+					pt1 = (pts[0], pts[1])
+					pt2 = (curvePoints[i+1][0], curvePoints[i+1][1])
 					processedPoints.append(pt1)
 					processedPoints.append(pt2)
-					
 					
 					interpolatedPt = self.interpolatePoint(pt1, pt2, interpolFactor)
 					interpolatedPoints.append(interpolatedPt)
 					
-					
-					if interpolatedPt in processedPoints:
-						pass
-					else:
-						pass
-						
 				except IndexError:
 					pass
 			
-			self.interpolatedPoints = interpolatedPoints
+			return interpolatedPoints
+		return None
 
-	def drawTangents(self, glyph):
+	def drawTangents(self, layer):
 		if self.w.off.get() != 1:
+			print("__1")
 			try:
 				stepsToDraw = []
 				if self.w.five.get() == 1:
@@ -180,50 +156,52 @@ class DeCasteljau:
 				else:
 					interpolFactor = float("{0:.2f}".format(self.w.sliderInterpol.get()))
 					stepsToDraw.append(interpolFactor)
-
-				for contour in glyph.contours:
-					for segmentIndex, segment in enumerate(contour.segments):
-						
-						allInterpolatedPoints = []
-						lastInterpolatedPt = []
-						if segment.type == "line":
-							pass
-						else:
+				for path in layer.paths:
+					nodeIndex = 0
+					for node in path.nodes:
+						if node.type == "curve":
+							allInterpolatedPoints = []
+							lastInterpolatedPt = []
+							
+							curvePoints = []
+							prevOnCurve = path.nodes[nodeIndex - 3]
+							curvePoints.append((prevOnCurve.position.x, prevOnCurve.position.y, prevOnCurve.type))
+							Off1 = path.nodes[nodeIndex - 2]
+							curvePoints.append((Off1.position.x, Off1.position.y, Off1.type))
+							Off2 = path.nodes[nodeIndex - 1]
+							curvePoints.append((Off2.position.x, Off2.position.y, Off2.type))
+							curvePoints.append((node.position.x, node.position.y, node.type))
+							
 							for interpolFactor in stepsToDraw:
-								
-								listOfSelectedPoints = self.getSelectedPoints(segmentIndex, segment, contour)
-								self.drawingCalculation(glyph, listOfSelectedPoints, interpolFactor)
-								
-								allInterpolatedPoints.extend(self.interpolatedPoints)
+								interpolatedPoints = self.drawingCalculation(curvePoints, interpolFactor)
+								if interpolatedPoints is None:
+									continue
+								allInterpolatedPoints.extend(interpolatedPoints)
 								for a in range(self.w.oneTwoThree.get()):
-									self.drawingCalculation(glyph, self.interpolatedPoints, interpolFactor)
-									allInterpolatedPoints.extend(self.interpolatedPoints)
+									interpolatedPoints = self.drawingCalculation(interpolatedPoints, interpolFactor)
+									allInterpolatedPoints.extend(interpolatedPoints)
 									if a == 1:
 										try:
-											lastInterpolatedPt.append((self.interpolatedPoints[-1]))
+											lastInterpolatedPt.append((interpolatedPoints[-1]))
 										except IndexError:
 											pass
 						
-						
-						for point in allInterpolatedPoints:
-							if point in lastInterpolatedPt:
-								colorDots = self.w.colorfinalPt.get()
-								self.drawDot(point, colorDots)
-							else:
-								colorDots = self.w.colorPts.get()
-								self.drawDot(point, colorDots)
+							for point in allInterpolatedPoints:
+								if point in lastInterpolatedPt:
+									colorDots = self.w.colorfinalPt.get()
+									self.drawDot(point, colorDots)
+								else:
+									colorDots = self.w.colorPts.get()
+									self.drawDot(point, colorDots)
+						nodeIndex += 1
 			except TypeError:
-				pass
+				import traceback
+				print(traceback.format_exc())
 
 	def drawDot(self, point, colorDots):
-		widthP = int(self.w.ptThickness.get())
-		path = NSBezierPath.bezierPath()
-		path.moveToPoint_((point[0]-widthP, point[1]+0))
-		path.curveToPoint_controlPoint1_controlPoint2_((point[0]+0, point[1]+widthP),(point[0]-widthP, point[1]+widthP), (point[0]+0, point[1]+widthP))
-		path.curveToPoint_controlPoint1_controlPoint2_((point[0]+widthP, point[1]+0), (point[0]+widthP, point[1]+widthP), (point[0]+widthP, point[1]+0))
-		path.curveToPoint_controlPoint1_controlPoint2_((point[0]+0, point[1]-widthP), (point[0]+widthP, point[1]-widthP), (point[0]+0, point[1]-widthP))
-		path.curveToPoint_controlPoint1_controlPoint2_((point[0]-widthP, point[1]+0), (point[0]-widthP, point[1]-widthP), (point[0]-widthP, point[1]+0))
-		path.closePath()
+		widthP = int(self.w.ptThickness.get()) / self.scale
+		rect = NSMakeRect(point[0]-widthP, point[1]-widthP, widthP * 2, widthP * 2)
+		path = NSBezierPath.bezierPathWithOvalInRect_(rect)
 		colorDots.set()
 		path.fill()
 
