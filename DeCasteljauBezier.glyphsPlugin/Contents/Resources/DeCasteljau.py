@@ -31,9 +31,9 @@ class DeCasteljau:
 
 	def DeCasteljauInit(self):
 		self.w = FloatingWindow((self.widthOfTool, self.heightOfTool), "De Casteljau / revolvertype.com")
-		self.w.sliderInterpol = Slider((10, 8, -10, 10), sizeStyle="small", minValue=0, maxValue=1, value=0.5, callback=self.sliderCallback)
+		self.w.sliderInterpol = Slider((10, 10, -10, 14), sizeStyle="small", minValue=0, maxValue=1, value=0.5, callback=self.sliderCallback)
 		y = 35
-		self.w.oneTwoThree = SegmentedButton((10, y - 5, 125, 20), [dict(title=" 1 "), dict(title=" 2 "), dict(title=" 3 ")], callback=self.updateFromUI)
+		self.w.oneTwoThree = SegmentedButton((10, y - 5, 125, 20), [dict(title="1"), dict(title="2"), dict(title="3")], callback=self.updateFromUI)
 		self.w.oneTwoThree.set(2)
 		self.w.five = CheckBox((140, y - 2, 40, 16), '5', callback=self.checkbox5Callback, value=False, sizeStyle="small")
 		self.w.ten = CheckBox((170, y - 2, 40, 16), '10', callback=self.checkbox10Callback, value=False, sizeStyle="small")
