@@ -11,20 +11,22 @@ from __future__ import division, print_function, unicode_literals
 from DeCasteljau import DeCasteljau
 
 import objc
-from GlyphsApp import *
-from GlyphsApp.plugins import *
+import sys
 import traceback
+from GlyphsApp import Glyphs, GSCallbackHandler, Message, DRAWBACKGROUND, EDIT_MENU
+from GlyphsApp.plugins import GeneralPlugin
+from AppKit import NSMenuItem
 
 hasAllModules = True
 
 try:
-	from vanilla import *
+	import vanilla
 except:
 	hasAllModules = False
 	print("Exception in De Casteljau Bezier:")
-	print('-'*60)
+	print('-' * 60)
 	traceback.print_exc(file=sys.stdout)
-	print('-'*60)
+	print('-' * 60)
 warned = False
 
 class DeCasteljauTool(GeneralPlugin):
@@ -35,7 +37,10 @@ class DeCasteljauTool(GeneralPlugin):
 
 	@objc.python_method
 	def start(self):
-		newMenuItem = NSMenuItem(self.name, self.showWindow_)
+		newMenuItem = NSMenuItem.new()
+		newMenuItem.setTitle_(self.name)
+		newMenuItem.setAction_(self.showWindow_)
+		newMenuItem.setTarget_(self)
 		Glyphs.menu[EDIT_MENU].append(newMenuItem)
 		self.DeCasteljau = DeCasteljau()
 		self.isDrawing = False
@@ -62,17 +67,17 @@ class DeCasteljauTool(GeneralPlugin):
 			self.DeCasteljau.scale = options["Scale"]
 			self.DeCasteljau.drawTangents(layer)
 		except Exception as e:
-			print(traceback.format_exc())
+			print(traceback.format_exc(), e)
 
 	def showWindow_(self, sender):
 		""" Do something like show a window"""
-		
+		global warned
 		if not hasAllModules and not warned:
 			warned = True
 			ErrorString = "This plugin needs the vanilla, robofab and fontTools module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
 			Message(ErrorString, title="Problem with some modules")
 			return
-		if not self.DeCasteljau.w._window: # after closing the window, the NSWindow, might go away. so we need to recreate it. TODO: find a better solution
+		if not self.DeCasteljau.w._window:  # after closing the window, the NSWindow, might go away. so we need to recreate it. TODO: find a better solution
 			self.DeCasteljau.DeCasteljauInit()
 		self.DeCasteljau.showWindow()
 		self.startDrawing()

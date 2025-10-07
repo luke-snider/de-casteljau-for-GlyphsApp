@@ -15,15 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>4</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.2</string>
-	<key>UpdateFeedURL</key>
-	<string>____OnlineUrlToThisPlist____</string>
-	<key>productPageURL</key>
-	<string>____ProductPageURL____</string>
-	<key>productReleaseNotes</key>
-	<string>____LatestReleaseNotes____</string>
+	<string>0.0.3</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright, revolvertype, 2018</string>
 	<key>NSPrincipalClass</key>
